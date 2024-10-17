@@ -33,6 +33,11 @@ sanitize_part() {
     echo "$1" | sed 's/[\/:*?"<>|]/_/g'
 }
 
+# Function to extract the payment date from the Paddle.com Remittance Advice PDF
+extract_paddle_remittance_date() {
+    /opt/homebrew/bin/pdftotext -q -layout "$1" - | grep "Payment Date:" | sed 's/.*Payment Date: *//g' | xargs
+}
+
 # Function to extract invoice date from LanguageTooler PDF
 extract_languagetooler_date() {
     /opt/homebrew/bin/pdftotext -q -layout "$1" - | grep "Billed On" | sed 's/.*Billed On *//g' | xargs
@@ -257,6 +262,12 @@ if echo "$content" | grep -q "www.namecheap.com"; then
     extracted_date=$(extract_namecheap_date "$input_file")
     date_format="%m/%d/%Y"
     new_filename_prefix=""
+elif echo "$content" | grep -q "Remittance Advice"; then
+    pdf_type="paddle_remittance"
+    extracted_date=$(extract_paddle_remittance_date "$input_file")
+    date_format="%d %b %Y"
+    new_filename_prefix="Paddle.com - "
+    invoice_details="Remittance Advice"
 elif echo "$content" | grep -q "LanguageTooler"; then
     pdf_type="languagetooler"
     extracted_date=$(extract_languagetooler_date "$input_file")
@@ -385,7 +396,7 @@ sanitized_invoice_details=$(sanitize_part "$invoice_details")
 sanitized_filename=$(sanitize_part "$filename")
 
 # Prepare new filename
-if [ "$pdf_type" = "paypal" ] || [ "$pdf_type" = "languagetooler" ] || [ "$pdf_type" = "udemy" ] || [ "$pdf_type" = "helpscout" ] || [ "$pdf_type" = "bolcom" ] || [ "$pdf_type" = "uptimerobot" ] || [ "$pdf_type" = "paddle" ] || [ "$pdf_type" = "amazon" ] || [ "$pdf_type" = "postmark" ] || [ "$pdf_type" = "openai" ] || [ "$pdf_type" = "digitalocean" ] || [ "$pdf_type" = "forge" ] || [ "$pdf_type" = "google_workspace" ] || [ "$pdf_type" = "stripe" ]; then
+if [ "$pdf_type" = "paypal" ] || [ "$pdf_type" = "paddle_remittance" ] || [ "$pdf_type" = "languagetooler" ] || [ "$pdf_type" = "udemy" ] || [ "$pdf_type" = "helpscout" ] || [ "$pdf_type" = "bolcom" ] || [ "$pdf_type" = "uptimerobot" ] || [ "$pdf_type" = "paddle" ] || [ "$pdf_type" = "amazon" ] || [ "$pdf_type" = "postmark" ] || [ "$pdf_type" = "openai" ] || [ "$pdf_type" = "digitalocean" ] || [ "$pdf_type" = "forge" ] || [ "$pdf_type" = "google_workspace" ] || [ "$pdf_type" = "stripe" ]; then
     new_filename="${converted_date} - ${sanitized_prefix}${sanitized_invoice_details}.pdf"
 elif [[ $filename =~ ^github-.*-receipt-[0-9]{4}-[0-9]{2}-[0-9]{2}\.pdf$ ]]; then
     middle_part=$(echo "$filename" | sed -E 's/^github-(.*)-receipt-[0-9]{4}-[0-9]{2}-[0-9]{2}\.pdf$/\1/')
@@ -398,8 +409,6 @@ elif [[ $filename =~ ^[0-9]{4}-[0-9]{2}-[0-9]{2} ]]; then
 else
     new_filename="${converted_date} - ${sanitized_prefix}${sanitized_filename}"
 fi
-
-
 
 # Rename the file
 mv "$input_file" "$new_filename"
