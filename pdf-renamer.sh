@@ -2,7 +2,7 @@
 
 # Check if an input file or folder is provided by Automator
 if [ $# -eq 0 ]; then
-    echo "No input provided. Exiting."
+    echo "No input provided. Provide an input file or folder as the first argument."
     exit 1
 fi
 
@@ -160,7 +160,8 @@ extract_paypal_prefix() {
 
 # Updated function to extract invoice details from PayPal PDF
 extract_paypal_invoice_details() {
-    local content=$(/opt/homebrew/bin/pdftotext -q "$1" -)
+    local content
+    content=$(/opt/homebrew/bin/pdftotext -q "$1" -)
     if echo "$content" | grep -q "Purchase details"; then
         echo "$content" |
         awk '/Purchase details/{flag=1; next} /^$/{flag=0} flag' |
