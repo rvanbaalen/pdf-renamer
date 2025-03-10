@@ -1,0 +1,34 @@
+{
+  "name": "pdf-renamer",
+  "version": "1.0.0",
+  "description": "A Node.js tool that intelligently reads the contents of invoice PDFs and renames them with a consistent, human-readable format",
+  "type": "module",
+  "main": "pdf-renamer.js",
+  "bin": {
+    "pdf-renamer": "./pdf-renamer.js"
+  },
+  "scripts": {
+    "start": "node pdf-renamer.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rvanbaalen/pdf-renamer.git"
+  },
+  "keywords": [
+    "pdf",
+    "rename",
+    "invoice",
+    "automation",
+    "invoice-management",
+    "file-management"
+  ],
+  "engines": {
+    "node": ">=22.0.0"
+  },
+  "author": "Robin van Baalen",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/rvanbaalen/pdf-renamer/issues"
+  },
+  "homepage": "https://github.com/rvanbaalen/pdf-renamer#readme"
+}
