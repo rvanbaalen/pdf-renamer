@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.0.2](https://github.com/rvanbaalen/pdf-renamer/compare/v2.0.1...v2.0.2) (2025-03-10)
+
+
+### Bug Fixes
+
+* update package name to scoped format ([4dc893d](https://github.com/rvanbaalen/pdf-renamer/commit/4dc893dd1e85ee1b82620098db9a2ef1ddbc6c79))
+
 ## [2.0.1](https://github.com/rvanbaalen/pdf-renamer/compare/v2.0.0...v2.0.1) (2025-03-10)
 
 
