@@ -1,5 +1,17 @@
 # Changelog
 
+## [2.0.0](https://github.com/rvanbaalen/pdf-renamer/compare/v1.0.0...v2.0.0) (2025-03-10)
+
+
+### ⚠ BREAKING CHANGES
+
+* complete rewrite to modular nodejs based script
+
+### Features
+
+* add npm publication logic to release workflow ([94f30b6](https://github.com/rvanbaalen/pdf-renamer/commit/94f30b6010f077f5fe875abc80e0419bdf2913a6))
+* complete rewrite to modular nodejs based script ([5d94daf](https://github.com/rvanbaalen/pdf-renamer/commit/5d94dafb639adafc426c002d07747a8ee6c1cb61))
+
 ## 1.0.0 (2025-03-10)
 
 
