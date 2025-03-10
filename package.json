@@ -1,5 +1,5 @@
 {
-  "name": "pdf-renamer",
+  "name": "@rvanbaalen/pdf-renamer",
   "version": "1.0.0",
   "description": "A Node.js tool that intelligently reads the contents of invoice PDFs and renames them with a consistent, human-readable format",
   "type": "module",
