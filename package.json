@@ -1,7 +1,7 @@
 {
   "name": "@rvanbaalen/pdf-renamer",
   "version": "1.0.0",
-  "description": "A Node.js tool that intelligently reads the contents of invoice PDFs and renames them with a consistent, human-readable format",
+  "description": "A Node.js tool that intelligently reads the contents of invoice PDFs and renames them using LLM-powered analysis",
   "type": "module",
   "main": "pdf-renamer.js",
   "bin": {
@@ -20,7 +20,9 @@
     "invoice",
     "automation",
     "invoice-management",
-    "file-management"
+    "file-management",
+    "ollama",
+    "llm"
   ],
   "engines": {
     "node": ">=22.0.0"
@@ -36,8 +38,15 @@
   },
   "files": [
     "pdf-renamer.js",
-    "rules/**/*",
+    "lib/**/*",
     "README.md",
     "LICENSE"
-  ]
+  ],
+  "dependencies": {
+    "dotenv": "^16.4.5",
+    "handlebars": "^4.7.8",
+    "node-fetch": "^3.3.2",
+    "form-data": "^4.0.0",
+    "commander": "^12.0.0"
+  }
 }

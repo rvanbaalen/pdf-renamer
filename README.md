@@ -1,57 +1,42 @@
 # PDF Renamer
 
-A Node.js tool that intelligently reads the contents of invoice PDFs and renames them with a consistent, human-readable format:
-
-`yyyy-mm-dd - {Company name} - Invoice {invoice number}.pdf` 
-
-Where `yyyy-mm-dd` is the date of the invoice, `{Company name}` is the name of the company that issued the invoice, and `{invoice number}` is the invoice number.
+A Node.js tool that intelligently renames PDF files using LLM-powered analysis. It extracts information from PDFs and generates meaningful filenames based on customizable templates.
 
 ## Features
 
-- Extracts relevant information from various PDF invoice types
-- Renames files with a consistent naming pattern
-- Processes single files or entire directories
-- Extensible architecture with modular rules for different PDF types
+- Uses Ollama (local LLM) to analyze PDF content
+- Extracts key information like dates, company names, and document content
+- Customizable filename templates using Handlebars syntax
+- Support for various configuration options
+- Dry-run mode to preview changes
+- Works with single files or entire directories
 
 ## Requirements
 
 - Node.js v22 or higher
-- macOS (uses macOS-specific `date` command)
+- macOS (uses macOS-specific `date` command) or Linux
 - pdftotext (can be installed via Homebrew: `brew install poppler`)
-
-## Usage
-
-You can use pdf-renamer without installation using `npx`:
-
-### Single file
-```bash
-npx @rvanbaalen/pdf-renamer /path/to/invoice.pdf
-```
-
-### Multiple files
-```bash
-# Renames all PDF files in the current directory
-npx @rvanbaalen/pdf-renamer . 
-
-# Renames all PDF files in the specified directory
-npx @rvanbaalen/pdf-renamer /path/to/directory
-```
-
-### Options
-```bash
-# Show help
-npx @rvanbaalen/pdf-renamer --help
-
-# Show version
-npx @rvanbaalen/pdf-renamer --version
-
-# List all available rule extractors (add-ons)
-npx @rvanbaalen/pdf-renamer --addons
-```
+- Ollama running locally or on a reachable server
 
 ## Installation
 
-### Install globally (optional)
+### Prerequisites
+
+1. Install Ollama from [ollama.ai](https://ollama.ai) and make sure it's running
+2. Pull a model that you want to use:
+   ```bash
+   ollama pull llama3
+   ```
+
+### Using npx
+
+You can use pdf-renamer without installation:
+
+```bash
+npx @rvanbaalen/pdf-renamer [options] <file-or-directory>
+```
+
+### Global Installation
 
 If you prefer, you can install the tool globally:
 
@@ -62,119 +47,120 @@ npm install -g @rvanbaalen/pdf-renamer
 Then use it without the `npx` prefix:
 
 ```bash
-pdf-renamer /path/to/invoice.pdf
+pdf-renamer [options] <file-or-directory>
 ```
 
-## Supported PDF Types
+## Usage
 
-PDF Renamer includes extractors for various invoice types. To see all available extractors:
+### Basic Usage
 
 ```bash
-npx @rvanbaalen/pdf-renamer --addons
+# Rename a single PDF file
+npx @rvanbaalen/pdf-renamer invoice.pdf
+
+# Rename all PDFs in the current directory
+npx @rvanbaalen/pdf-renamer .
+
+# Rename all PDFs in a specific directory
+npx @rvanbaalen/pdf-renamer /path/to/invoices
 ```
 
-Currently, PDF Renamer supports the following invoice types:
+### Options
 
-- Paddle.com invoices and remittance advice
-- LanguageTooler invoices
-- Stripe invoices
-- And more...
+```bash
+# Show help
+npx @rvanbaalen/pdf-renamer --help
 
-More invoice types can be added by creating custom extractors.
+# Show version
+npx @rvanbaalen/pdf-renamer --version
 
-## Extending with Custom Rules
+# List available Ollama models
+npx @rvanbaalen/pdf-renamer list-models
 
-PDF Renamer uses a modular architecture that makes it easy to add support for new PDF types. Each PDF type has its own extractor class that handles the extraction of information from that specific format.
+# Show current configuration
+npx @rvanbaalen/pdf-renamer show-config
 
-### Creating a Custom Extractor
+# Use a specific model
+npx @rvanbaalen/pdf-renamer -m llama3 invoice.pdf
 
-1. Create a new file in the `rules/` directory, e.g., `rules/MyCompanyExtractor.js`
-2. Extend the `BaseExtractor` class and implement the required methods
-3. Add your extractor to the list in `rules/index.js`
+# Use a different Ollama server
+npx @rvanbaalen/pdf-renamer -u http://ollama-server:11434 invoice.pdf
 
-Here's an example of a custom extractor:
+# Use a custom filename template
+npx @rvanbaalen/pdf-renamer -t "{{date.yyyy}}-{{date.mm}} - {{company.name}}.pdf" invoice.pdf
 
-```javascript
-/**
- * MyCompanyExtractor class
- * 
- * Handles extraction for MyCompany PDF invoices
- */
-import { BaseExtractor } from './BaseExtractor.js';
+# Dry run (show what would happen without making changes)
+npx @rvanbaalen/pdf-renamer -d invoice.pdf
 
-export class MyCompanyExtractor extends BaseExtractor {
-  // Provide a description of what this extractor handles
-  getDescription() {
-    return 'Handles MyCompany invoice PDFs';
-  }
-
-  // Determine if this extractor can handle this PDF
-  canHandle() {
-    return this.content.includes('MyCompany') || 
-           this.content.includes('specific text that identifies this PDF type');
-  }
-
-  // Extract the date from the PDF
-  getDate() {
-    const layoutContent = this.extractContentWithLayout();
-    const dateMatch = layoutContent.match(/Invoice Date:\s*(.*)/);
-    return dateMatch ? dateMatch[1].trim() : '';
-  }
-
-  // Specify the date format for conversion
-  getDateFormat() {
-    return '%B %d, %Y'; // For dates like "January 1, 2023"
-  }
-
-  // Get the prefix for the new filename
-  getFilenamePrefix() {
-    return 'MyCompany - ';
-  }
-
-  // Get the invoice details for the new filename
-  getInvoiceDetails() {
-    const invoiceNumber = this.getInvoiceNumber();
-    return invoiceNumber ? `Invoice ${invoiceNumber}` : '';
-  }
-
-  // Helper method to extract invoice number
-  getInvoiceNumber() {
-    const layoutContent = this.extractContentWithLayout();
-    const invoiceMatch = layoutContent.match(/Invoice #:\s*(.*)/);
-    return invoiceMatch ? invoiceMatch[1].trim() : '';
-  }
-}
+# Verbose output
+npx @rvanbaalen/pdf-renamer -v invoice.pdf
 ```
 
-### Registering Your Custom Extractor
+## Filename Templates
 
-After creating your extractor, add it to the list in `rules/index.js`:
+You can customize the filename template using Handlebars syntax. Available variables from the LLM analysis:
 
-```javascript
-import { MyCompanyExtractor } from './MyCompanyExtractor.js';
+- `{{date.yyyy}}` - Year (e.g., 2025)
+- `{{date.mm}}` - Month (e.g., 03)
+- `{{date.dd}}` - Day (e.g., 15)
+- `{{date.full}}` - Full date in ISO format (e.g., 2025-03-15)
+- `{{company.name}}` - Company or organization name
+- `{{invoice.number}}` - Invoice number (if available)
+- `{{summary.oneline}}` - One-line summary of the document
 
-// Add to the EXTRACTORS array
-export const EXTRACTORS = [
-  // ...existing extractors
-  MyCompanyExtractor,
-];
+Example templates:
+
+```
+{{date.yyyy}}-{{date.mm}}-{{date.dd}} - {{company.name}} - {{summary.oneline}}.pdf
+{{date.yyyy}}-{{date.mm}}-{{date.dd}} - {{company.name}} - Invoice {{invoice.number}}.pdf
+{{date.yyyy}}{{date.mm}}{{date.dd}}_{{company.name}}.pdf
 ```
 
-### BaseExtractor API
+## Configuration
 
-The `BaseExtractor` class provides the following methods:
+You can configure PDF Renamer in several ways:
 
-- **extractContent()**: Extracts the text content from the PDF
-- **extractContentWithLayout()**: Extracts the text content with layout preservation
-- **executeCommand(command)**: Executes a command and returns the result
-- **getDescription()**: Returns a description of what this extractor handles
-- **canHandle()**: Determines if this extractor can handle the given PDF
-- **getDate()**: Gets the date from the PDF
-- **getDateFormat()**: Gets the date format string for date conversion
-- **getFilenamePrefix()**: Gets the prefix for the new filename
-- **getInvoiceDetails()**: Gets the invoice details for the new filename
+1. Command-line options (take precedence)
+2. Environment variables
+3. Default configuration
 
-You must implement the last five methods in your custom extractor.
+To use environment variables, create a `.env` file in the project directory (see `.env.example` for available options).
+
+### Environment Variables
+
+```
+# Ollama configuration
+OLLAMA_BASE_URL=http://localhost:11434
+OLLAMA_MODEL=llama3
+OLLAMA_SYSTEM_PROMPT=...
+
+# PDF processing
+PDF_EXTRACTION_COMMAND=/opt/homebrew/bin/pdftotext -layout -q "${filePath}" -
+PDF_MAX_SIZE=10485760  # 10MB
+
+# Filename template
+FILENAME_TEMPLATE={{date.yyyy}}-{{date.mm}}-{{date.dd}} - {{company.name}} - {{summary.oneline}}.pdf
+FILENAME_FALLBACK={{date.full}} - Unnamed Invoice.pdf
+FILENAME_SANITIZE=true
+```
+
+## How It Works
+
+1. The tool extracts text content from PDFs using `pdftotext`
+2. The extracted text is sent to Ollama for analysis
+3. The LLM extracts key information and returns structured JSON data
+4. This data is used with the template to generate a new filename
+5. The PDF file is renamed accordingly
+
+## Troubleshooting
+
+If the script fails to rename a file, check the following:
+
+1. Make sure Ollama is running and the model is available
+2. Verify that pdftotext is installed correctly
+3. Use the `-v` flag for verbose output to see what's happening
+4. Try a different model if the current one doesn't extract information correctly
+5. Check if the PDF content is extractable (not scanned or image-based)
 
 ## Development
 
@@ -191,15 +177,6 @@ npm install
 # Run the script locally
 node pdf-renamer.js /path/to/your/invoice.pdf
 ```
-
-## Troubleshooting
-
-If the script fails to rename a file, check the following:
-
-1. Make sure the PDF is a recognized invoice type (use `--addons` to see supported types)
-2. Verify that pdftotext is installed and working correctly (`brew install poppler`)
-3. Check if the PDF content is extractable (not scanned or image-based)
-4. Try adding a custom extractor for your specific PDF format
 
 ## License
 
