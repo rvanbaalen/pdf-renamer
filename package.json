@@ -30,5 +30,14 @@
   "bugs": {
     "url": "https://github.com/rvanbaalen/pdf-renamer/issues"
   },
-  "homepage": "https://github.com/rvanbaalen/pdf-renamer#readme"
+  "homepage": "https://github.com/rvanbaalen/pdf-renamer#readme",
+  "publishConfig": {
+    "access": "public"
+  },
+  "files": [
+    "pdf-renamer.js",
+    "rules/**/*",
+    "README.md",
+    "LICENSE"
+  ]
 }

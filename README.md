@@ -25,28 +25,28 @@ You can use pdf-renamer without installation using `npx`:
 
 ### Single file
 ```bash
-npx pdf-renamer /path/to/invoice.pdf
+npx @rvanbaalen/pdf-renamer /path/to/invoice.pdf
 ```
 
 ### Multiple files
 ```bash
 # Renames all PDF files in the current directory
-npx pdf-renamer . 
+npx @rvanbaalen/pdf-renamer . 
 
 # Renames all PDF files in the specified directory
-npx pdf-renamer /path/to/directory
+npx @rvanbaalen/pdf-renamer /path/to/directory
 ```
 
 ### Options
 ```bash
 # Show help
-npx pdf-renamer --help
+npx @rvanbaalen/pdf-renamer --help
 
 # Show version
-npx pdf-renamer --version
+npx @rvanbaalen/pdf-renamer --version
 
 # List all available rule extractors (add-ons)
-npx pdf-renamer --addons
+npx @rvanbaalen/pdf-renamer --addons
 ```
 
 ## Installation
@@ -56,7 +56,7 @@ npx pdf-renamer --addons
 If you prefer, you can install the tool globally:
 
 ```bash
-npm install -g pdf-renamer
+npm install -g @rvanbaalen/pdf-renamer
 ```
 
 Then use it without the `npx` prefix:
@@ -70,7 +70,7 @@ pdf-renamer /path/to/invoice.pdf
 PDF Renamer includes extractors for various invoice types. To see all available extractors:
 
 ```bash
-npx pdf-renamer --addons
+npx @rvanbaalen/pdf-renamer --addons
 ```
 
 Currently, PDF Renamer supports the following invoice types:
