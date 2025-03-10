@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.0.1](https://github.com/rvanbaalen/pdf-renamer/compare/v2.0.0...v2.0.1) (2025-03-10)
+
+
+### Bug Fixes
+
+* add package-lock.json for dependency management ([580bbf3](https://github.com/rvanbaalen/pdf-renamer/commit/580bbf3c4e33e3130e101cd91771c91ed7fe050f))
+
 ## [2.0.0](https://github.com/rvanbaalen/pdf-renamer/compare/v1.0.0...v2.0.0) (2025-03-10)
 
 
